@@ -4,10 +4,29 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "tsup --watch",
+    "build": "tsup"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "packageManager": "pnpm@10.33.0"
+  "packageManager": "pnpm@10.33.0",
+  "devDependencies": {
+    "@types/node": "^25.5.2",
+    "tsup": "^8.5.1",
+    "typescript": "^6.0.2"
+  },
+  "dependencies": {
+    "@clack/prompts": "^1.2.0",
+    "@types/fs-extra": "^11.0.4",
+    "clack": "^0.1.0",
+    "commander": "^14.0.3",
+    "fs-extra": "^11.3.4",
+    "picocolors": "^1.1.1"
+  },
+  "type": "module",
+  "bin": {
+    "attheme": "./dist/index.js"
+  }
 }
