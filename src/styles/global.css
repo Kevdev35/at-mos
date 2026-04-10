@@ -1,5 +1,7 @@
 @import 'tailwindcss';
 
 @theme {
-  --prueba: #fff;
+  --color-primary: #7c3aed;
+  --color-secondary: #06b6d4;
+  --spacing-base: 0.5rem;
 }

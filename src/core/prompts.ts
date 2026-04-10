@@ -1,10 +1,40 @@
 import * as p from '@clack/prompts'
 import type { ThemeVariable } from './writer.js'
 
+export type InputMode = 'manual' | 'file'
+
+export async function askInputMode(): Promise<InputMode> {
+  const mode = await p.select({
+    message: '¿Cómo quieres definir tus variables?',
+    options: [
+      { value: 'manual', label: 'Manualmente, una por una' },
+      { value: 'file',   label: 'Importar desde archivo (.json o .css)' },
+    ]
+  })
+
+  if (p.isCancel(mode)) process.exit(0)
+  return mode as InputMode
+}
+
+export async function askFilePath(): Promise<string> {
+  const path = await p.text({
+    message: 'Ruta del archivo de variables',
+    placeholder: 'tokens.json  o  base-vars.css',
+    validate: (val) => {
+      if (!val) return 'La ruta no puede estar vacía'
+      if (!val.endsWith('.json') && !val.endsWith('.css'))
+        return 'Solo se aceptan archivos .json'
+    }
+  })
+
+  if (p.isCancel(path)) process.exit(0)
+  return path as string
+}
+
 export async function collectVariables(): Promise<ThemeVariable[]> {
   const variables: ThemeVariable[] = []
 
-  p.intro('Definí tus variables CSS')
+  p.log.step('Definí tus variables CSS')
 
   while (true) {
     const name = await p.text({
@@ -52,7 +82,7 @@ export async function confirmOutput(path: string): Promise<boolean> {
 
 export async function askOutputPath(): Promise<string> {
   const path = await p.text({
-    message: 'Ruta del archivo CSS',
+    message: 'Ruta del archivo CSS de salida',
     placeholder: 'src/styles/global.css',
     validate: (val) => {
       if (!val) return 'La ruta no puede estar vacía'

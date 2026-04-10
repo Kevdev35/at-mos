@@ -85,9 +85,33 @@ function scanForCss(dir) {
 
 // src/core/prompts.ts
 import * as p from "@clack/prompts";
+async function askInputMode() {
+  const mode = await p.select({
+    message: "\xBFC\xF3mo quieres definir tus variables?",
+    options: [
+      { value: "manual", label: "Manualmente, una por una" },
+      { value: "file", label: "Importar desde archivo (.json o .css)" }
+    ]
+  });
+  if (p.isCancel(mode)) process.exit(0);
+  return mode;
+}
+async function askFilePath() {
+  const path = await p.text({
+    message: "Ruta del archivo de variables",
+    placeholder: "tokens.json  o  base-vars.css",
+    validate: (val) => {
+      if (!val) return "La ruta no puede estar vac\xEDa";
+      if (!val.endsWith(".json") && !val.endsWith(".css"))
+        return "Solo se aceptan archivos .json";
+    }
+  });
+  if (p.isCancel(path)) process.exit(0);
+  return path;
+}
 async function collectVariables() {
   const variables = [];
-  p.intro("Defin\xED tus variables CSS");
+  p.log.step("Defin\xED tus variables CSS");
   while (true) {
     const name = await p.text({
       message: "Nombre de la variable",
@@ -124,7 +148,7 @@ async function confirmOutput(path) {
 }
 async function askOutputPath() {
   const path = await p.text({
-    message: "Ruta del archivo CSS",
+    message: "Ruta del archivo CSS de salida",
     placeholder: "src/styles/global.css",
     validate: (val) => {
       if (!val) return "La ruta no puede estar vac\xEDa";
@@ -226,9 +250,7 @@ async function init(options) {
     outputPath = await askOutputPath();
   } else {
     const confirmed = await confirmOutput(outputPath);
-    if (!confirmed) {
-      outputPath = await askOutputPath();
-    }
+    if (!confirmed) outputPath = await askOutputPath();
   }
   let variables = [];
   if (options.from) {
@@ -236,10 +258,18 @@ async function init(options) {
     variables = await parseFromFile(options.from);
     spinner2.stop(`${variables.length} variables importadas`);
   } else {
-    variables = await collectVariables();
+    const mode = await askInputMode();
+    if (mode === "file") {
+      const filePath = await askFilePath();
+      spinner2.start(`Leyendo variables desde ${filePath}...`);
+      variables = await parseFromFile(filePath);
+      spinner2.stop(`${variables.length} variables importadas`);
+    } else {
+      variables = await collectVariables();
+    }
   }
   if (variables.length === 0) {
-    logger.warn("No definiste ninguna variable. Operaci\xF3n cancelada.");
+    logger.warn("No se defini\xF3 ninguna variable. Operaci\xF3n cancelada.");
     p3.outro("Sin cambios.");
     return;
   }
