@@ -1,6 +1,6 @@
 {
   "name": "@kevdev35/at-mos",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "CLI interactiva para generar global.css con @theme para Tailwind v4",
   "files": [
     "dist"
@@ -36,6 +36,6 @@
   },
   "type": "module",
   "bin": {
-    "themecss": "dist/index.js"
+    "at-mos": "./dist/index.js"
   }
 }

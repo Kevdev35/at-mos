@@ -77,7 +77,8 @@ export async function confirmOutput(path: string): Promise<boolean> {
     initialValue: true
   })
 
-  return !p.isCancel(confirmed) && confirmed === true
+  if (p.isCancel(confirmed)) process.exit(0)
+  return confirmed as boolean
 }
 
 export async function askOutputPath(): Promise<string> {

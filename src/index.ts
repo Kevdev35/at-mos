@@ -17,4 +17,22 @@ program
     await init(options)
   })
 
+program
+  .command('list')
+  .description('Muestra las variables CSS definidas en tu @theme')
+  .option('-o, --output <path>', 'Ruta personalizada del archivo CSS')
+  .action(async (options) => {
+    const { list } = await import('./commands/list')
+    await list(options)
+  })
+
+program
+  .command('update')
+  .description('Agrega, modifica o elimina variables en tu @theme')
+  .option('-o, --output <path>', 'Ruta personalizada del archivo CSS')
+  .action(async (options) => {
+    const { update } = await import('./commands/update')
+    await update(options)
+  })
+
 program.parse()

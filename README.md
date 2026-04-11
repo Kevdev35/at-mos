@@ -1,6 +1,8 @@
-# at-mos ⚡
+# AT-MOS ⚡
 
-> Interactive CLI to generate your `global.css` with `@theme` for Tailwind CSS v4+
+> Generate your Tailwind CSS @theme in seconds — no copy-paste, no guesswork.
+
+**Stop writing the same CSS variables on every new project.**
 
 [![npm version](https://img.shields.io/npm/v/@kevdev35/at-mos.svg?style=flat-square)](https://www.npmjs.com/package/@kevdev35/at-mos)
 [![license](https://img.shields.io/npm/l/@kevdev35/at-mos.svg?style=flat-square)](./LICENSE)
@@ -8,80 +10,131 @@
 
 ---
 
-## What is at-mos?
+You start a new project. You open `global.css`. You write `@theme {`. And then you spend the next 10 minutes copy-pasting colors, spacing values and font names from your last project — tweaking them, cleaning up leftovers, wondering if you missed something.
 
-**at-mos** is an interactive CLI that generates your `global.css` with custom CSS variables inside a `@theme` block — ready for Tailwind CSS v4. No more manual copy-pasting, no more messy config files.
+Every. Single. Time.
 
-It detects your environment automatically (framework, package manager, CSS path) and guides you step by step. You can define variables interactively, or import them from a `.json` or `.css` file.
+**at-mos fixes that.**
+
+One command. It detects your framework, finds your CSS file, asks for your design tokens (colors, spacing, typography) — or reads them from a file you already have — and generates a clean, ready-to-use `global.css` with your `@theme` block. Then it gets out of your way.
+
 
 ```css
+/* generated instantly */
 @import 'tailwindcss';
 
 @theme {
   --color-primary: #7c3aed;
   --color-secondary: #06b6d4;
   --spacing-base: 0.5rem;
+  --font-sans: 'Syne', sans-serif;
 }
 ```
 
----
-
-## Requirements
-
-- Node.js 18+
-- Any project using Tailwind CSS v4 (or planning to)
-
----
-
-## Quick start
+## Try it now!
 
 ```bash
 npx @kevdev35/at-mos init
 ```
 
-No installation required. Just run it in your project root.
 
 ---
 
-## Installation
+## See it in action
+
+```
+$ npx @kevdev35/at-mos init
+
+┌  at-mos — @theme generator for Tailwind v4
+│
+◇  Project analyzed
+◆  Package manager: pnpm
+◆  Framework: SvelteKit
+◆  Tailwind: v4
+│
+◇  Generate CSS at src/app.css? Yes
+│
+◆  How do you want to define your variables?
+●  Import from file (.json or .css)
+│
+◇  File path → tokens.json
+◇  6 variables found. Select which to include:
+  ✔ --color-primary
+  ✔ --color-secondary
+  ✔ --spacing-base
+  ✗ --debug-outline
+  ✔ --font-sans
+│
+◇  Backup saved → src/app.css.bak
+✓  global.css generated
+│
+└  Your @theme is ready. Edit it anytime.
+```
+
+---
+
+## Why at-mos
+
+Tailwind v4 moved configuration from `tailwind.config.js` into CSS. That's a great decision — but it also means there's no tooling around it yet. You're back to doing everything by hand.
+
+at-mos is that missing tool. It doesn't lock you in, doesn't generate opinionated defaults, and doesn't force any naming convention on you. It just asks what you want and writes it correctly.
+
+Works with **Next.js, SvelteKit, Astro, Vue** — or any project, really, because at the end of the day it's just a CSS file.
+
+---
+
+## Install
 
 ```bash
-# npm
-npm install -g @kevdev35/at-mos
+# run once without installing
+npx @kevdev35/at-mos init
 
-# pnpm
+# or install globally
+npm i -g @kevdev35/at-mos
 pnpm add -g @kevdev35/at-mos
-
-# bun
 bun add -g @kevdev35/at-mos
 ```
+
+> Requires Node.js 18+
 
 ---
 
 ## Usage
 
-### Interactive mode
+### Interactive — define variables one by one
 
 ```bash
 at-mos init
 ```
 
-The CLI will:
-1. Detect your package manager, framework and CSS path
-2. Ask how you want to define your variables (manually or from a file)
-3. Generate your `global.css` with a backup of the previous one
+### Import from a JSON file
 
-### Import from file
+Great for design tokens from Figma, Style Dictionary, or your own system.
 
-```bash
-# from JSON
-at-mos init --from tokens.json
-
-# from CSS partial
-at-mos init --from base-vars.css
+```json
+{
+  "color-primary": "#7c3aed",
+  "color-secondary": "#06b6d4",
+  "spacing-base": "0.5rem"
+}
 ```
 
-When importing from a file, at-mos shows all found variables and lets you select which ones to include.
+```bash
+at-mos init --from tokens.json
+```
+
+Keys without `--` are auto-prefixed. You choose which variables make it into the output.
+
+### Import from a CSS partial
+
+```css
+--color-primary: #7c3aed;
+--spacing-base: 0.5rem;
+```
+
+```bash
+at-mos init --from base-vars.css
+```
 
 ### Custom output path
 
@@ -89,116 +142,20 @@ When importing from a file, at-mos shows all found variables and lets you select
 at-mos init --output src/styles/theme.css
 ```
 
-### Development mode (from source)
+### All flags
 
-```bash
-pnpm build
-node dist/index.js init
-```
-
----
-
-## Supported input formats
-
-### JSON
-
-Keys are automatically prefixed with `--` if not already present.
-
-```json
-{
-  "color-primary": "#7c3aed",
-  "color-secondary": "#06b6d4",
-  "--spacing-base": "0.5rem"
-}
-```
-
-### CSS partial
-
-Any file with CSS custom properties.
-
-```css
---color-primary: #7c3aed;
---color-secondary: #06b6d4;
---spacing-base: 0.5rem;
-```
+| Flag           | What it does                                   |
+|----------------|------------------------------------------------|
+| `--output, -o` | Set a custom output path                       |
+| `--from`       | Import variables from a `.json` or `.css` file |
+| `--version`    | Show current version                           |
+| `--help`       | Show help                                      |
 
 ---
 
-## Framework support
+## What gets generated
 
-at-mos works with any framework because it only writes standard CSS. Auto-detection is available for:
-
-| Framework  | Default CSS path             |
-|------------|------------------------------|
-| Next.js    | `src/app/globals.css`        |
-| SvelteKit  | `src/app.css`                |
-| Astro      | `src/styles/global.css`      |
-| Vue        | `src/assets/main.css`        |
-| Unknown    | Auto-scan of `src/` directory |
-
----
-
-## Options
-
-| Flag              | Description                                      |
-|-------------------|--------------------------------------------------|
-| `--output, -o`    | Custom path for the output CSS file              |
-| `--from`          | Import variables from a `.json` or `.css` file   |
-| `--version, -v`   | Show current version                             |
-| `--help, -h`      | Show help                                        |
-
----
-
-## Contributing
-
-Contributions are welcome! If you find a bug, have a feature idea or want to add support for a new framework, feel free to open an issue or a PR.
-
-```bash
-# 1. Fork and clone
-git clone https://github.com/Kevdev35/at-mos
-
-# 2. Install dependencies
-pnpm install
-
-# 3. Dev mode
-pnpm dev
-
-# 4. Test locally
-node dist/index.js init
-```
-
-### Tech stack
-
-- **TypeScript** — type safety across all modules
-- **tsup** — zero-config bundler
-- **commander** — CLI commands and flags
-- **@clack/prompts** — interactive terminal UI
-- **picocolors** — terminal colors
-- **fs-extra** — file system utilities
-
-> Coming in v2: AI-powered variable extraction from images (OpenAI, Anthropic, Gemini, Ollama — bring your own API key)
-
----
-
-## License
-
-MIT © [KevDev35](https://github.com/Kevdev35)
-
----
-
----
-
-# at-mos ⚡
-
-> CLI interactiva para generar tu `global.css` con `@theme` para Tailwind CSS v4+
-
----
-
-## ¿Qué es at-mos?
-
-**at-mos** es una CLI interactiva que genera tu `global.css` con variables CSS personalizadas dentro de un bloque `@theme` — lista para Tailwind CSS v4. Sin copy-paste manual, sin archivos de configuración desordenados.
-
-Detecta tu entorno automáticamente (framework, gestor de paquetes, ruta del CSS) y te guía paso a paso. Puedes definir las variables de forma interactiva, o importarlas desde un archivo `.json` o `.css`.
+A clean `global.css` — nothing extra, nothing you didn't ask for:
 
 ```css
 @import 'tailwindcss';
@@ -210,153 +167,45 @@ Detecta tu entorno automáticamente (framework, gestor de paquetes, ruta del CSS
 }
 ```
 
----
-
-## Requisitos
-
-- Node.js 18+
-- Cualquier proyecto con Tailwind CSS v4 (o que planee usarlo)
+If a CSS file already exists at the output path, at-mos saves a `.bak` copy before overwriting. You never lose previous work.
 
 ---
 
-## Inicio rápido
+## Roadmap
+
+**v1 — available now**
+- [x] Auto-detection of framework, package manager and CSS path
+- [x] Interactive variable definition
+- [x] Import from `.json` or `.css`
+- [x] Multiselect when importing from file
+- [x] Automatic backup before overwriting
+- [x] Custom output path via `--output`
+
+**v2 — coming soon**
+- [ ] AI-powered variable extraction from images (mockups, screenshots, design files)
+- [ ] Bring your own API key — OpenAI, Anthropic, Gemini, Ollama
+- [ ] No vendor lock-in, plug in whatever model you want
+
+---
+
+## Contributing
+
+Found a bug? Have an idea? Want to add support for a new framework?
 
 ```bash
-npx @kevdev35/at-mos init
-```
-
-Sin instalación previa. Ejecútalo en la raíz de tu proyecto.
-
----
-
-## Instalación
-
-```bash
-# npm
-npm install -g @kevdev35/at-mos
-
-# pnpm
-pnpm add -g @kevdev35/at-mos
-
-# bun
-bun add -g @kevdev35/at-mos
-```
-
----
-
-## Uso
-
-### Modo interactivo
-
-```bash
-at-mos init
-```
-
-La CLI va a:
-1. Detectar tu gestor de paquetes, framework y ruta del CSS
-2. Preguntarte cómo quieres definir tus variables (manual o desde archivo)
-3. Generar tu `global.css` con un backup del archivo anterior
-
-### Importar desde archivo
-
-```bash
-# desde JSON
-at-mos init --from tokens.json
-
-# desde CSS parcial
-at-mos init --from base-vars.css
-```
-
-Al importar desde archivo, at-mos muestra todas las variables encontradas y te deja elegir cuáles incluir.
-
-### Ruta de salida personalizada
-
-```bash
-at-mos init --output src/styles/theme.css
-```
-
-### Modo desarrollo (desde el código fuente)
-
-```bash
-pnpm build
-node dist/index.js init
-```
-
----
-
-## Formatos de entrada soportados
-
-### JSON
-
-Las claves se prefijan automáticamente con `--` si no lo tienen.
-
-```json
-{
-  "color-primary": "#7c3aed",
-  "color-secondary": "#06b6d4",
-  "--spacing-base": "0.5rem"
-}
-```
-
-### CSS parcial
-
-Cualquier archivo con custom properties CSS.
-
-```css
---color-primary: #7c3aed;
---color-secondary: #06b6d4;
---spacing-base: 0.5rem;
-```
-
----
-
-## Soporte de frameworks
-
-at-mos funciona con cualquier framework porque solo escribe CSS estándar. La detección automática está disponible para:
-
-| Framework  | Ruta CSS por defecto         |
-|------------|------------------------------|
-| Next.js    | `src/app/globals.css`        |
-| SvelteKit  | `src/app.css`                |
-| Astro      | `src/styles/global.css`      |
-| Vue        | `src/assets/main.css`        |
-| Desconocido | Escaneo automático de `src/` |
-
----
-
-## Opciones
-
-| Flag              | Descripción                                          |
-|-------------------|------------------------------------------------------|
-| `--output, -o`    | Ruta personalizada del archivo CSS de salida         |
-| `--from`          | Importar variables desde un archivo `.json` o `.css` |
-| `--version, -v`   | Mostrar versión actual                               |
-| `--help, -h`      | Mostrar ayuda                                        |
-
----
-
-## Contribuir
-
-¡Las contribuciones son bienvenidas! Si encontraste un bug, tienes una idea de feature o quieres agregar soporte para un nuevo framework, abre un issue o un PR.
-
-```bash
-# 1. Fork y clonar
 git clone https://github.com/Kevdev35/at-mos
-
-# 2. Instalar dependencias
+cd at-mos
 pnpm install
-
-# 3. Modo desarrollo
 pnpm dev
 
-# 4. Probar localmente
+# test it
 node dist/index.js init
 ```
 
-> En v2: extracción de variables desde imágenes con IA (OpenAI, Anthropic, Gemini, Ollama — trae tu propia API key)
+Open an issue before working on something big — just so we're aligned. PRs are welcome.
 
 ---
 
-## Licencia
+## License
 
 MIT © [KevDev35](https://github.com/Kevdev35)
