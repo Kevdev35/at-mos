@@ -93,3 +93,20 @@ export async function askOutputPath(): Promise<string> {
   if (p.isCancel(path)) process.exit(0)
   return path as string
 }
+
+export async function selectVariables(
+  variables: ThemeVariable[]
+): Promise<ThemeVariable[]> {
+  const selected = await p.multiselect({
+    message: `Se encontraron ${variables.length} variables. ¿Cuáles quieres incluir?`,
+    options: variables.map((v) => ({
+      value: v,
+      label: v.name,
+      hint: v.value
+    })),
+    required: true
+  })
+
+  if (p.isCancel(selected)) process.exit(0)
+  return selected as ThemeVariable[]
+}

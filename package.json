@@ -1,16 +1,25 @@
 {
-  "name": "attheme",
+  "name": "@kevdev35/at-mos",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "CLI interactiva para generar global.css con @theme para Tailwind v4",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "tsup --watch",
     "build": "tsup"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "tailwind",
+    "tailwindcss",
+    "css",
+    "theme",
+    "cli",
+    "tailwind-v4"
+  ],
+  "author": "Kevdev35",
+  "license": "MIT",
   "packageManager": "pnpm@10.33.0",
   "devDependencies": {
     "@types/node": "^25.5.2",
@@ -27,6 +36,6 @@
   },
   "type": "module",
   "bin": {
-    "attheme": "./dist/index.js"
+    "themecss": "dist/index.js"
   }
 }

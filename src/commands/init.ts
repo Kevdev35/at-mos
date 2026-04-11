@@ -1,6 +1,6 @@
 import * as p from '@clack/prompts'
 import { detectEnv } from '../core/detector.js'
-import { askInputMode, askFilePath, collectVariables, confirmOutput, askOutputPath } from '../core/prompts.js'
+import { askInputMode, askFilePath, collectVariables, confirmOutput, askOutputPath, selectVariables } from '../core/prompts.js'
 import { writeTheme } from '../core/writer.js'
 import { parseFromFile } from '../core/parser.js'
 import { logger } from '../utils/logger.js'
@@ -45,20 +45,25 @@ export async function init(options: InitOptions) {
   let variables: { name: string; value: string }[] = []
 
   if (options.from) {
-    // viene del flag --from
     spinner.start(`Leyendo variables desde ${options.from}...`)
-    variables = await parseFromFile(options.from)
-    spinner.stop(`${variables.length} variables importadas`)
+    const parsed = await parseFromFile(options.from)
+    spinner.stop(`${parsed.length} variables encontradas`)
+
+    variables = await selectVariables(parsed)
+    logger.success(`${variables.length} variables seleccionadas`)
   } else {
     // pregunta al usuario cómo quiere ingresar las variables
     const mode = await askInputMode()
 
-    if (mode === 'file') {
-      const filePath = await askFilePath()
-      spinner.start(`Leyendo variables desde ${filePath}...`)
-      variables = await parseFromFile(filePath)
-      spinner.stop(`${variables.length} variables importadas`)
-    } else {
+  if (mode === 'file') {
+    const filePath = await askFilePath()
+    spinner.start(`Leyendo variables desde ${filePath}...`)
+    const parsed = await parseFromFile(filePath)
+    spinner.stop(`${parsed.length} variables encontradas`)
+
+    variables = await selectVariables(parsed)
+    logger.success(`${variables.length} variables seleccionadas`)
+  } else {
       variables = await collectVariables()
     }
   }

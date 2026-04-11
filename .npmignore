@@ -1,0 +1,7 @@
+src/
+tsconfig.json
+tsup.config.ts
+*.bak
+*.json.bak
+*.css.bak
+.gitignore
