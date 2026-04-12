@@ -5,13 +5,15 @@ import { writeTheme } from '../core/writer.js'
 import { parseFromFile } from '../core/parser.js'
 import { logger } from '../utils/logger.js'
 
+import { execSync } from 'child_process'
+
 interface InitOptions {
   output?: string
   from?: string
 }
 
 export async function init(options: InitOptions) {
-  p.intro('attheme — generador de @theme para Tailwind v4')
+  p.intro('\x1b[35m@t\x1b[36mmos\x1b[0m — generador de @theme para Tailwind')
 
   // 1. Detectar entorno
   const spinner = p.spinner()
@@ -23,11 +25,50 @@ export async function init(options: InitOptions) {
   logger.step(`Framework: ${env.framework}`)
   logger.step(`Tailwind: ${env.tailwindVersion}`)
 
-  // 2. Advertencias
+  // 2. Verificar la instalacion de Tailwind
+
   if (env.tailwindVersion === 'not-installed') {
-    logger.warn('Tailwind CSS no detectado. El CSS generado usará @theme de todas formas.')
+    const install = await p.confirm({
+      message: 'Tailwind CSS no está instalado. ¿Quieres instalarlo ahora?',
+      initialValue: true,
+    })
+
+    if (install) {
+      const version = await p.select({
+        message: 'Selecciona la versión a instalar:',
+        options: [
+          { value: 'npm install tailwindcss @tailwindcss/vite', label: 'Tailwind v4.2', hint: 'Recomendado para @theme' },
+          { value: 'tailwindcss@latest', label: 'Tailwind v3 (Estable)', hint: 'No soporta @theme' },
+        ],
+      })
+
+      if (p.isCancel(version)) {
+        p.outro('Instalación cancelada.')
+        return
+      }
+
+      const s = p.spinner()
+      s.start(`Instalando ${version} con ${env.packageManager}...`)
+      
+      try {
+        // Ejemplo: npm install tailwindcss@next
+        const installCmd = `${env.packageManager} ${env.packageManager === 'yarn' ? 'add' : 'install'} ${version}`
+        execSync(installCmd, { stdio: 'ignore' }) 
+        s.stop('Instalación completada')
+        logger.success(`Tailwind CSS instalado con éxito.`)
+      } catch (e) {
+        s.stop('Error en la instalación')
+        logger.error('No se pudo instalar Tailwind. Por favor, hazlo manualmente.')
+      }
+    } else {
+      logger.warn('Continuando sin instalar. El CSS generado podría no funcionar correctamente.')
+    }
   } else if (env.tailwindVersion === '3') {
     logger.warn('Tienes Tailwind v3. @theme es exclusivo de v4+.')
+    const upgrade = await p.confirm({
+      message: '¿Deseas actualizar a la v4?',
+      initialValue: false
+    })
   }
 
   // 3. Resolver ruta de salida
@@ -45,12 +86,21 @@ export async function init(options: InitOptions) {
   let variables: { name: string; value: string }[] = []
 
   if (options.from) {
-    spinner.start(`Leyendo variables desde ${options.from}...`)
-    const parsed = await parseFromFile(options.from)
-    spinner.stop(`${parsed.length} variables encontradas`)
+    try {
+      spinner.start(`Leyendo variables desde ${options.from}...`)
+      const parsed = await parseFromFile(options.from)
+      spinner.stop(`${parsed.length} variables encontradas`)
 
-    variables = await selectVariables(parsed)
-    logger.success(`${variables.length} variables seleccionadas`)
+      // Si quieres que sea 100% automático, podrías saltarte el 'selectVariables' 
+      // cuando se usa el flag, pero dejarlo así permite confirmar qué se importa.
+      variables = await selectVariables(parsed)
+      logger.success(`${variables.length} variables seleccionadas`)
+    } catch (error) {
+      spinner.stop('Error al leer el archivo')
+      logger.error(`No se pudo leer el archivo: ${options.from}. Revisa que la ruta sea correcta.`)
+      p.outro('Operación fallida.')
+      return // Salimos para no intentar escribir un archivo vacío
+    }
   } else {
     // pregunta al usuario cómo quiere ingresar las variables
     const mode = await askInputMode()

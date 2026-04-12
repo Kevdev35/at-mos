@@ -1,4 +1,4 @@
-# AT-MOS ⚡
+# at-mos ⚡
 
 > Generate your Tailwind CSS @theme in seconds — no copy-paste, no guesswork.
 
@@ -16,8 +16,13 @@ Every. Single. Time.
 
 **at-mos fixes that.**
 
-One command. It detects your framework, finds your CSS file, asks for your design tokens (colors, spacing, typography) — or reads them from a file you already have — and generates a clean, ready-to-use `global.css` with your `@theme` block. Then it gets out of your way.
+One command. It detects your framework, finds your CSS file, asks for your design tokens — or reads them from a file you already have — and generates a clean, ready-to-use `global.css` with your `@theme` block. Then it gets out of your way.
 
+## Try it now
+
+```bash
+npx @kevdev35/at-mos init
+```
 
 ```css
 /* generated instantly */
@@ -30,13 +35,6 @@ One command. It detects your framework, finds your CSS file, asks for your desig
   --font-sans: 'Syne', sans-serif;
 }
 ```
-
-## Try it now!
-
-```bash
-npx @kevdev35/at-mos init
-```
-
 
 ---
 
@@ -99,17 +97,65 @@ bun add -g @kevdev35/at-mos
 
 ---
 
-## Usage
+## Commands
 
-### Interactive — define variables one by one
+### `init` — generate your @theme from scratch
 
 ```bash
 at-mos init
 ```
 
-### Import from a JSON file
+Detects your environment, asks how you want to define your variables (interactively or from a file), and writes a clean `global.css`. Always backs up the previous file before overwriting.
 
-Great for design tokens from Figma, Style Dictionary, or your own system.
+### `list` — see what variables you already have
+
+```bash
+at-mos list
+```
+
+Reads your existing `global.css` and prints every variable defined inside `@theme` with its current value. Useful before running `update`.
+
+```
+◆  Variables in src/app.css
+●  --color-primary: #7c3aed
+●  --color-secondary: #06b6d4
+●  --spacing-base: 0.5rem
+└  3 variables listed.
+```
+
+### `update` — add, edit or delete variables
+
+```bash
+at-mos update
+```
+
+Shows your current variables and lets you choose what to do:
+
+- **Add** a new variable
+- **Edit** an existing one (shows current value as hint)
+- **Delete** one or more (requires confirmation)
+
+```
+◆  What do you want to do?
+●  Add a new variable
+○  Edit an existing variable
+○  Delete a variable
+```
+
+### All flags (available on every command)
+
+| Flag           | What it does                                   |
+|----------------|------------------------------------------------|
+| `--output, -o` | Set a custom CSS file path                     |
+| `--from`       | Import variables from a `.json` or `.css` file (init only) |
+| `--version`    | Show current version                           |
+| `--help`       | Show help                                      |
+
+---
+
+## Import from file
+
+### JSON — great for design tokens from Figma or Style Dictionary
 
 ```json
 {
@@ -123,9 +169,9 @@ Great for design tokens from Figma, Style Dictionary, or your own system.
 at-mos init --from tokens.json
 ```
 
-Keys without `--` are auto-prefixed. You choose which variables make it into the output.
+Keys without `--` are auto-prefixed. You pick which variables make it into the output.
 
-### Import from a CSS partial
+### CSS partial
 
 ```css
 --color-primary: #7c3aed;
@@ -135,21 +181,6 @@ Keys without `--` are auto-prefixed. You choose which variables make it into the
 ```bash
 at-mos init --from base-vars.css
 ```
-
-### Custom output path
-
-```bash
-at-mos init --output src/styles/theme.css
-```
-
-### All flags
-
-| Flag           | What it does                                   |
-|----------------|------------------------------------------------|
-| `--output, -o` | Set a custom output path                       |
-| `--from`       | Import variables from a `.json` or `.css` file |
-| `--version`    | Show current version                           |
-| `--help`       | Show help                                      |
 
 ---
 
@@ -167,19 +198,20 @@ A clean `global.css` — nothing extra, nothing you didn't ask for:
 }
 ```
 
-If a CSS file already exists at the output path, at-mos saves a `.bak` copy before overwriting. You never lose previous work.
+If a file already exists at the output path, at-mos saves a `.bak` copy before overwriting. You never lose previous work.
 
 ---
 
 ## Roadmap
 
-**v1 — available now**
-- [x] Auto-detection of framework, package manager and CSS path
-- [x] Interactive variable definition
+**v1.1 — available now**
+- [x] `init` — generate @theme from scratch
+- [x] `list` — view existing variables
+- [x] `update` — add, edit or delete variables
 - [x] Import from `.json` or `.css`
 - [x] Multiselect when importing from file
+- [x] Auto-detection of framework, package manager and CSS path
 - [x] Automatic backup before overwriting
-- [x] Custom output path via `--output`
 
 **v2 — coming soon**
 - [ ] AI-powered variable extraction from images (mockups, screenshots, design files)
