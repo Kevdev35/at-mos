@@ -5,7 +5,7 @@ import { Command } from "commander";
 var program = new Command();
 program.name("at-mos").description("CLI para generar global.css con @theme para Tailwind v4").version("1.1.0", "-v, --version", "Muestra la versi\xF3n de @t-mos");
 program.command("init").description("Genera tu global.css con @theme").option("-o, --output <path>", "Ruta personalizada del archivo CSS").option("-f, --from <file>", "Importar variables desde .json o .css").action(async (options) => {
-  const { init } = await import("./init-JQCC4RBA.js");
+  const { init } = await import("./init-6NI74OFR.js");
   await init(options);
 });
 program.command("list").description("Muestra las variables CSS definidas en tu @theme").option("-o, --output <path>", "Ruta personalizada del archivo CSS").action(async (options) => {
